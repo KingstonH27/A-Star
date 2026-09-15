@@ -1,6 +1,6 @@
 # Chatgpt was used for the pygame elements
-https://chatgpt.com/share/6aa97ead-7fac-83ea-906d-ab4d3b7776a7
-https://chatgpt.com/share/6aa97e1c-8750-83e9-9709-bec38bda0d31
+#https://chatgpt.com/share/6aa97ead-7fac-83ea-906d-ab4d3b7776a7
+#https://chatgpt.com/share/6aa97e1c-8750-83e9-9709-bec38bda0d31
 
 import pygame
 import grid
@@ -12,8 +12,10 @@ WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-grid.init(screen, 20, 15)
-pathFinding.init()
+width = 20
+height = 15
+grid.init(screen, width, height)
+pathFinding.init(width,height)
 
 running = True
 drag_value = None

@@ -64,11 +64,14 @@ def draw():
 
             if colors[row][col] is not None:
                 color = colors[row][col]
-            elif gridData[row][col] == 1:
+
+            elif val == 1:
                 color = (255, 255, 255)
 
             #Color assignments
-            elif
+            # val 2 = explored
+            elif val == 2:
+                color = (255,165,0)
 
             else:
                 color = (50, 50, 50)

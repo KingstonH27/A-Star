@@ -1,5 +1,7 @@
+
 import grid
 import math
+
 
 
 class Node:
@@ -19,11 +21,16 @@ ORANGE = (255,165,0)
 openList = []
 gCost = []
 
+width = 0
+height = 0
 
 start = Node(5, 5)
 end = Node(10, 10)
 
-def init():
+
+def init(w, h):
+    global width, height
+    width, height = w, h
     openList.append(start)
 
 
@@ -40,12 +47,19 @@ def run():
     grid.color_tile(Node(13,13), (255, 0, 0))
     grid.text_tile(Node(13,13), "Test")
 
+    try:
+        neighbors = getNeighbors(openList[0])
+        openList.extend(neighbors)
 
-    neighbors = getNeighbors(openList[0])
-    openList.extend(neighbors)
-    for n in openList:
-        grid.set(n,2)
-        openList.remove(n)
+        for n in openList:
+            grid.set(n,2)
+            #KEEP THIS?
+            openList.pop(0)
+
+    except:
+        pass
+
+
 
 
 
@@ -65,8 +79,13 @@ def getNeighbors(focusNode):
     for neighbor in range(4):
         x = focusNode.x + directions[neighbor][0]
         y = focusNode.y + directions[neighbor][1]
-        if grid.check(Node(x,y)) != 1:
-            neighbors.append(Node(x,y))
+        if grid.check(Node(x,y)) == 1:
+            pass
+        elif x >= width or x <= 0 or y >= height or y <= 0:
+            print("Out of bounds ",x," ",y)
+        else:
+            neighbors.append(Node(x, y))
+        grid.text_tile(Node(x,y), neighbor)
     return neighbors
 
 #heuristic
