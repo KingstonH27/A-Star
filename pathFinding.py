@@ -1,35 +1,45 @@
 import grid
-
+import math
 
 def run():
     # Write your pathfinding algorithm here
     # grid.gridData[row][col] gives you the tile
 
     # Example:
-    start = (0, 0)
-    end = (10, 10)
+    start = Node(0, 0)
+    end = Node(10, 10)
+
+    neighbors = getNeighbors(start)
+    #for i in range(4):
+        #grid.color_tile(neighbors[i],(255,0,0))
+
 
     # YOUR ALGORITHM GOES HERE
 
+openList = []
+gCost = []
 
 
-def get_neighbors(row, col):
-    """Get the 4 adjacent tiles."""
+directions = [
+    (0,1),
+    (1,0),
+    (0,-1),
+    (-1,0)
+]
+def getNeighbors(focusNode):
     neighbors = []
-
-    directions = [
-        (-1, 0),  # up
-        (1, 0),   # down
-        (0, -1),  # left
-        (0, 1)    # right
-    ]
-
-    for dr, dc in directions:
-        r = row + dr
-        c = col + dc
-
-        if 0 <= r < len(grid.gridData) and 0 <= c < len(grid.gridData[0]):
-            if grid.gridData[r][c] == 0:
-                neighbors.append((r, c))
-
+    for neighbor in range(4):
+        x = focusNode.x + directions[neighbor][0]
+        y = focusNode.y + directions[neighbor][1]
+        openList.append(Node(x,y))
     return neighbors
+
+#heuristic
+def h(n1,n2,b):
+    return math.sqrt((n2.x-n1.x)**2 + (n2.y-n1.y)**2)
+
+
+class Node:
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y

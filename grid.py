@@ -5,10 +5,11 @@ CELL_SIZE = 40
 screen = None
 gridData = []
 colors = []
+texts = []
 
 
 def init(new_screen, width, height):
-    global screen, gridData, colors
+    global screen, gridData, colors, texts
 
     screen = new_screen
 
@@ -22,9 +23,18 @@ def init(new_screen, width, height):
         for _ in range(height)
     ]
 
+    texts = [
+        ["" for _ in range(width)]
+        for _ in range(height)
+    ]
+
 
 def color_tile(row, col, color):
     colors[row][col] = color
+
+
+def text_tile(row, col, text):
+    texts[row][col] = text
 
 
 def click(pos):
@@ -38,12 +48,13 @@ def click(pos):
 
 
 def draw():
+    font = pygame.font.Font(None, 24)
+
     for row in range(len(gridData)):
         for col in range(len(gridData[row])):
             x = col * CELL_SIZE
             y = row * CELL_SIZE
 
-            # Use custom color if one exists
             if colors[row][col] is not None:
                 color = colors[row][col]
             elif gridData[row][col] == 1:
@@ -63,3 +74,17 @@ def draw():
                 (x, y, CELL_SIZE, CELL_SIZE),
                 1
             )
+
+            # Draw text in the center of the tile
+            if texts[row][col] != "":
+                text_surface = font.render(
+                    str(texts[row][col]),
+                    True,
+                    (0, 0, 0)
+                )
+
+                text_rect = text_surface.get_rect(
+                    center=(x + CELL_SIZE // 2, y + CELL_SIZE // 2)
+                )
+
+                screen.blit(text_surface, text_rect)

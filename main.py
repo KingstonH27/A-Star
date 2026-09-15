@@ -2,6 +2,7 @@
 
 import pygame
 import grid
+import pathFinding
 
 pygame.init()
 
@@ -44,6 +45,8 @@ while running:
             grid.gridData[row][col] = drag_value
 
     screen.fill((30, 30, 30))
+
+    pathFinding.run()
 
     grid.draw()
 
