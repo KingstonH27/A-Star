@@ -29,12 +29,12 @@ def init(new_screen, width, height):
     ]
 
 
-def color_tile(row, col, color):
-    colors[row][col] = color
+def color_tile(node, color):
+    colors[node.x][node.y] = color
 
 
-def text_tile(row, col, text):
-    texts[row][col] = text
+def text_tile(node, text):
+    texts[node.y][node.x] = text
 
 
 def click(pos):
@@ -45,6 +45,9 @@ def click(pos):
 
     if 0 <= row < len(gridData) and 0 <= col < len(gridData[row]):
         gridData[row][col] = 1 - gridData[row][col]
+
+def check(node):
+    return gridData[node.y][node.x]
 
 
 def draw():
