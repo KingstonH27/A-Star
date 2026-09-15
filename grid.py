@@ -46,6 +46,9 @@ def click(pos):
     if 0 <= row < len(gridData) and 0 <= col < len(gridData[row]):
         gridData[row][col] = 1 - gridData[row][col]
 
+def set(node, value):
+    gridData[node.y][node.x] = int(value)
+
 def check(node):
     return gridData[node.y][node.x]
 
@@ -57,11 +60,16 @@ def draw():
         for col in range(len(gridData[row])):
             x = col * CELL_SIZE
             y = row * CELL_SIZE
+            val = gridData[row][col]
 
             if colors[row][col] is not None:
                 color = colors[row][col]
             elif gridData[row][col] == 1:
                 color = (255, 255, 255)
+
+            #Color assignments
+            elif
+
             else:
                 color = (50, 50, 50)
 
