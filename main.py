@@ -1,6 +1,4 @@
 # Chatgpt was used for the pygame elements
-#https://chatgpt.com/share/6aa97ead-7fac-83ea-906d-ab4d3b7776a7
-#https://chatgpt.com/share/6aa97e1c-8750-83e9-9709-bec38bda0d31
 
 import pygame
 import grid
@@ -15,14 +13,15 @@ clock = pygame.time.Clock()
 width = 20
 height = 15
 grid.init(screen, width, height)
-pathFinding.init(width,height)
+pathFinding.init(width, height)
 
 running = True
 drag_value = None
 started = False
 
-# Button
+# Buttons
 button = pygame.Rect(650, 50, 100, 50)
+step_button = pygame.Rect(650, 120, 100, 50)
 
 while running:
     for event in pygame.event.get():
@@ -32,8 +31,14 @@ while running:
 
         # Start / Stop button
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+
             if button.collidepoint(event.pos):
                 started = not started
+                continue
+
+            # Step button
+            if step_button.collidepoint(event.pos):
+                pathFinding.run()
                 continue
 
         # Start drag
@@ -60,19 +65,27 @@ while running:
 
     screen.fill((30, 30, 30))
 
-    # Only run pathfinding when started
+    # Run continuously when started
     if started:
         pathFinding.run()
 
     grid.draw()
 
-    # Draw button
+    # Buttons
     pygame.draw.rect(screen, (100, 100, 100), button)
+    pygame.draw.rect(screen, (100, 100, 100), step_button)
 
     font = pygame.font.Font(None, 28)
+
+    # Start / Stop text
     text = "Stop" if started else "Start"
     text_surface = font.render(text, True, (255, 255, 255))
     text_rect = text_surface.get_rect(center=button.center)
+    screen.blit(text_surface, text_rect)
+
+    # Step text
+    text_surface = font.render("Step", True, (255, 255, 255))
+    text_rect = text_surface.get_rect(center=step_button.center)
     screen.blit(text_surface, text_rect)
 
     pygame.display.flip()
