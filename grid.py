@@ -30,7 +30,7 @@ def init(new_screen, width, height):
 
 
 def color_tile(node, color):
-    colors[node.x][node.y] = color
+    colors[node.y][node.x] = color
 
 
 def text_tile(node, text):
@@ -52,15 +52,17 @@ def set(node, value):
 def check(node):
     return gridData[node.y][node.x]
 
-def drawPath(p):
-    path = p
+def drawPaths(p):
+    global paths
+    paths.append(p)
 
-path = None
+
+paths = []
 
 def draw():
-
+    global paths
     font = pygame.font.Font(None, 24)
-    global path
+
 
     for row in range(len(gridData)):
         for col in range(len(gridData[row])):
@@ -108,8 +110,8 @@ def draw():
                 )
 
                 screen.blit(text_surface, text_rect)
+    for path in paths:
+        n1 = path.n1
+        n2 = path.n2
+        pygame.draw.line(screen, (255, 0, 0), ((n1.x+0.5) * CELL_SIZE, (n1.y+0.5) * CELL_SIZE), ((n2.x+0.5) * CELL_SIZE, (n2.y+0.5) * CELL_SIZE), 5)
 
-    if path:
-        lastn = path[0]
-        for n in path:
-            pygame.draw.line(screen, (255, 0, 0), (n.x*CELL_SIZE, n.y*CELL_SIZE), (lastn.x*CELL_SIZE, lastn.y*CELL_SIZE), 1)

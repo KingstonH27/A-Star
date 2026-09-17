@@ -11,6 +11,10 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 ORANGE = (255, 165, 0)
 
+class Path:
+    def __init__(self, n1, n2):
+        self.n1 = n1
+        self.n2 = n2
 
 class Node:
     def __init__(self, x, y):
@@ -61,41 +65,52 @@ def init(w, h):
 
 #Algorithm
 def run():
+    if len(toSearch) == 0:
+        return
+
     focus = bestF(toSearch)
-    if len(toSearch) > 0 and focus != end:
+
+    if focus == end:
+        grid.text_tile(focus, "FI")
+        #reconstructPath(focus)
+        for n in processed:
+            reconstructPath(n)
+        return
+
+    neighbors = getNeighbors(focus)
+
+    for n in neighbors:
+        newG = focus.g + h(focus, n)
+
+        if n not in toSearch:
+            n.setConnection(focus)
+            n.setG(newG)
+            n.setH(h(n, end))
+            toSearch.append(n)
 
 
+        else:
 
-        neighbors = getNeighbors(focus)
+            existing = toSearch[toSearch.index(n)]
 
-        for n in neighbors:
-            newG = focus.g + h(focus, n)
+            if newG < existing.g:
+                existing.setConnection(focus)
 
-            if n not in toSearch:
-                n.setConnection(focus)
-                n.setG(newG)
-                n.setH(h(n, end))
-                toSearch.append(n)
+                existing.setG(newG)
 
-            elif newG < n.g:
-                n.setConnection(focus)
-                n.setG(newG)
-
-        grid.set(focus, 2)
-        toSearch.remove(focus)
-    else:
-        reconstructPath(focus)
+    grid.set(focus, 2)
+    toSearch.remove(focus)
+    processed.append(focus)
 
 
+def reconstructPath(n):
+    while n != start:
+        grid.color_tile(n, GREEN)
+        n2 = n
+        n = n.connection
+        grid.drawPaths(Path(n,n2))
 
-def reconstructPath(node):
-    path = []
-    while node != start:
-        connection = node.connection
-        path.append(connection)
-        node = connection
-    grid.drawPath(path)
-    print("Done")
+
 
 
 
@@ -140,7 +155,7 @@ def getNeighbors(focusNode):
         if grid.check(Node(x, y)) == 2:
             continue
 
-        if neighbor in processed:
+        if Node(x, y) in processed:
             continue
 
         node = Node(x, y)

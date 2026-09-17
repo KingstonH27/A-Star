@@ -71,6 +71,7 @@ while running:
 
     grid.draw()
 
+
     # Buttons
     pygame.draw.rect(screen, (100, 100, 100), button)
     pygame.draw.rect(screen, (100, 100, 100), step_button)
