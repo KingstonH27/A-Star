@@ -35,10 +35,8 @@ class Node:
     def f(self):
         return self.g + self.h
 
-    def g(self):
-        return self.g
-    def h(self):
-        return self.h
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
 
 width = 0
 height = 0
@@ -62,18 +60,19 @@ def init(w, h):
 #Algorithm
 def run():
     if len(toSearch) > 0:
-        focus = toSearch[0]
+        focus = bestF(toSearch)
         neighbors = getNeighbors(focus)
         for n in neighbors:
             n.setConnection(focus)
-            n.setG(focus.g + 1)
-            n.setH(focus.h + h(focus, n))
-            s = n.g #(str(n.g)+"-"+str(n.h))
+            n.setG(focus.g + h(focus,n))
+            n.setH(h(n, end))
+            s = round(n.f) #(str(n.g)+"-"+str(n.h))
             grid.text_tile(n,s)
 
-        toSearch.append(bestF(neighbors))
+        toSearch.extend(neighbors)
         grid.set(focus, 2)
         toSearch.remove(focus)
+        processed.append(focus)
 
 
 
@@ -120,6 +119,9 @@ def getNeighbors(focusNode):
         if grid.check(Node(x, y)) == 2:
             continue
 
+        if neighbor in processed:
+            continue
+
         node = Node(x, y)
         neighbors.append(node)
 
@@ -129,9 +131,9 @@ def getNeighbors(focusNode):
     return neighbors
 
 
-# Heuristic
+# Heuristic - Manhattan
 def h(n1, n2):
-    return math.sqrt(
-        (n2.x - n1.x) ** 2 +
-        (n2.y - n1.y) ** 2
+    return (
+            abs(n2.x - n1.x) +
+            abs(n2.y - n1.y)
     )
