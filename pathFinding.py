@@ -44,6 +44,8 @@ height = 0
 start = Node(5, 5)
 end = Node(10, 10)
 
+
+
 toSearch = []
 processed = []
 
@@ -59,22 +61,41 @@ def init(w, h):
 
 #Algorithm
 def run():
-    if len(toSearch) > 0:
-        focus = bestF(toSearch)
-        neighbors = getNeighbors(focus)
-        for n in neighbors:
-            n.setConnection(focus)
-            n.setG(focus.g + h(focus,n))
-            n.setH(h(n, end))
-            s = round(n.f) #(str(n.g)+"-"+str(n.h))
-            grid.text_tile(n,s)
+    focus = bestF(toSearch)
+    if len(toSearch) > 0 and focus != end:
 
-        toSearch.extend(neighbors)
+
+
+        neighbors = getNeighbors(focus)
+
+        for n in neighbors:
+            newG = focus.g + h(focus, n)
+
+            if n not in toSearch:
+                n.setConnection(focus)
+                n.setG(newG)
+                n.setH(h(n, end))
+                toSearch.append(n)
+
+            elif newG < n.g:
+                n.setConnection(focus)
+                n.setG(newG)
+
         grid.set(focus, 2)
         toSearch.remove(focus)
-        processed.append(focus)
+    else:
+        reconstructPath(focus)
 
 
+
+def reconstructPath(node):
+    path = []
+    while node != start:
+        connection = node.connection
+        path.append(connection)
+        node = connection
+    grid.drawPath(path)
+    print("Done")
 
 
 

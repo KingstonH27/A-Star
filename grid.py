@@ -52,9 +52,15 @@ def set(node, value):
 def check(node):
     return gridData[node.y][node.x]
 
+def drawPath(p):
+    path = p
+
+path = None
 
 def draw():
+
     font = pygame.font.Font(None, 24)
+    global path
 
     for row in range(len(gridData)):
         for col in range(len(gridData[row])):
@@ -102,3 +108,8 @@ def draw():
                 )
 
                 screen.blit(text_surface, text_rect)
+
+    if path:
+        lastn = path[0]
+        for n in path:
+            pygame.draw.line(screen, (255, 0, 0), (n.x*CELL_SIZE, n.y*CELL_SIZE), (lastn.x*CELL_SIZE, lastn.y*CELL_SIZE), 1)
