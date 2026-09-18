@@ -4,15 +4,16 @@ import controls
 
 
 
-
+# --- Color presets ---
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 ORANGE = (255, 165, 0)
 
-heuristic = "Manhattan"
 
+
+# --- Classes ---
 class Path:
     def __init__(self, n1, n2):
         self.n1 = n1
@@ -37,6 +38,7 @@ class Node:
     def setConnection(self, other):
         self.connection = other
 
+    # The f value is the sum of the g and h
     @property
     def f(self):
         return self.g + self.h
@@ -44,16 +46,22 @@ class Node:
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
 
-
-
-start = Node(0, 0)
-end = Node(controls.width-1, controls.height-1)
-
-
-
+# --- Variables ---
+heuristic = "Manhattan"
+start = Node(1, 1)
+end = Node(controls.width-2, controls.height-2)
 toSearch = []
 processed = []
 
+directions = [
+    (0, 1),
+    (1, 0),
+    (0, -1),
+    (-1, 0)
+]
+
+
+# --- Initialization ---
 def init(w, h):
     global width, height
     width, height = w, h
@@ -64,7 +72,7 @@ def init(w, h):
 
 
 
-#Algorithm
+# --- Main Algorithm ---
 def run():
     if len(toSearch) == 0:
         controls.pathNotFound = True
@@ -74,11 +82,13 @@ def run():
     if controls.started == False:
         return
 
+    # Sets the node with the best F value as the current node to prioritize more likely optimal paths
     focus = bestF(toSearch)
 
+    # Checks if the end has been reached
     if focus == end:
         controls.started = False
-        grid.text_tile(focus, "F")
+        grid.text_tile(focus, "f")
         reconstructPath(focus)
 
         if controls.showAllPaths:
@@ -86,10 +96,15 @@ def run():
                 reconstructPath(n)
             return
 
+    # Gets neighbors of the current node, these are the options of where the path can go
     neighbors = getNeighbors(focus)
 
+    # For each neighbor calculate the heuristic(h), g, and f values. If the node is not already in toSearch aka the queue of nodes to check, then its added to toSearch. The connection to the previous node is saved so that the path can be retraced if it is the best.
     for n in neighbors:
-        newG = focus.g + h(focus, n)
+        #The g value is the path distance from a node to the start
+        #Originally I had done the previous node's g value + h(focus,n), but calculating the distance is unnecessary since each movement cost is 1 in 4 directional movement.
+        newG = focus.g + 1
+
 
         if n not in toSearch:
             n.setConnection(focus)
@@ -100,7 +115,7 @@ def run():
 
 
         else:
-
+            # If a better path is found(better g value) through already explored nodes, they will be updated
             existing = toSearch[toSearch.index(n)]
 
             if newG < existing.g:
@@ -113,7 +128,7 @@ def run():
     processed.append(focus)
 
 
-
+# --- Retraces path back to the start from n node ---
 def reconstructPath(n):
     while n != start:
         grid.color_tile(n, GREEN)
@@ -125,7 +140,7 @@ def reconstructPath(n):
 
 
 
-
+# --- BestF returns the nodes with the lowest F value ---
 def bestF(neighbors):
     best = neighbors[0].f
     node = neighbors[0]
@@ -137,18 +152,7 @@ def bestF(neighbors):
 
 
 
-
-
-
-
-directions = [
-    (0, 1),
-    (1, 0),
-    (0, -1),
-    (-1, 0)
-]
-
-
+# --- Returns neighboring nodes(4 directions) around a focus node ---
 def getNeighbors(focusNode):
     neighbors = []
 
@@ -172,14 +176,12 @@ def getNeighbors(focusNode):
 
         node = Node(x, y)
         neighbors.append(node)
-
-
-
-
     return neighbors
 
 
-# Heuristic - Manhattan
+# --- Calculates the heuristic, Manhattan or Euclidean ---
+# This project works on a 4 directional grid(no diagonal movement) and so Manhattan is more optimized because it can avoid calculating diagonals since the path traveled will be the same length as Manhattan movement
+# The heuristic(h) is the distance from one node to the end
 def h(n1, n2):
     if heuristic == "Manhattan":
         return abs(n2.x - n1.x) + abs(n2.y - n1.y)

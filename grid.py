@@ -1,3 +1,4 @@
+# --- Sets up the grid and standardizes color and text setting of grid cells ---
 import pygame
 
 CELL_SIZE = 40

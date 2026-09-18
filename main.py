@@ -1,4 +1,4 @@
-# Chatgpt was used for the pygame elements
+
 
 import pygame
 import grid
@@ -126,7 +126,7 @@ while controls.running:
     )
     screen.blit(
         pathLengthText,
-        pathLengthText.get_rect(center=(panel_x + 100, 540))
+        pathLengthText.get_rect(center=(panel_x + 100, 520))
     )
 
     # No path

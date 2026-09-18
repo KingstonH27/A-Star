@@ -1,3 +1,4 @@
+# --- Global Settings ---
 running = True
 started = False
 step = 0
