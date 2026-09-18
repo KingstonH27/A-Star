@@ -48,8 +48,8 @@ class Node:
 
 # --- Variables ---
 heuristic = "Manhattan"
-start = Node(1, 1)
-end = Node(controls.width-2, controls.height-2)
+start = Node(2, 2)
+end = Node(controls.width-3, controls.height-3)
 toSearch = []
 processed = []
 

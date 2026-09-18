@@ -23,6 +23,7 @@ Files:
 
 To use:
 - Run the **main.py** file
+- On the grid, s is the start and the e is the end. The end switches to f once the end has been found.
 
 - Click(or click and drag) on the grid to create walls, A* will go around walls
 
