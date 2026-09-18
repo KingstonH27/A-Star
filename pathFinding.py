@@ -66,8 +66,8 @@ def init(w, h):
     global width, height
     width, height = w, h
     toSearch.append(start)
-    grid.text_tile(start, "s")
-    grid.text_tile(end, "e")
+    grid.text_tile(start, "S")
+    grid.text_tile(end, "E")
 
 
 
@@ -88,7 +88,7 @@ def run():
     # Checks if the end has been reached
     if focus == end:
         controls.started = False
-        grid.text_tile(focus, "f")
+        grid.text_tile(focus, "F")
         reconstructPath(focus)
 
         if controls.showAllPaths:
