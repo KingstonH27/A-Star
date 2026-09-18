@@ -1,5 +1,7 @@
-Chatgpt was used for the pygame elements:
+Chatgpt was used for assistance:
+
 https://chatgpt.com/share/6aac8a67-6394-83ea-bfa1-39d02fb2ba0f
+
 https://chatgpt.com/share/6aa97ead-7fac-83ea-906d-ab4d3b7776a7
 
 
