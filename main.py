@@ -3,43 +3,75 @@
 import pygame
 import grid
 import pathFinding
+import controls
+import os
+import sys
 
 pygame.init()
 
-WIDTH, HEIGHT = 800, 600
+width = controls.width
+height = controls.height
+
+# Grid size + UI panel
+PANEL_WIDTH = 200
+WIDTH = width * grid.CELL_SIZE + PANEL_WIDTH
+HEIGHT = height * grid.CELL_SIZE
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-width = 20
-height = 15
 grid.init(screen, width, height)
 pathFinding.init(width, height)
 
-running = True
 drag_value = None
-started = False
+heuristic = "Manhattan"
 
 # Buttons
-button = pygame.Rect(650, 50, 100, 50)
-step_button = pygame.Rect(650, 120, 100, 50)
+button = pygame.Rect(width * grid.CELL_SIZE + 40, 50, 120, 50)
+step_button = pygame.Rect(width * grid.CELL_SIZE + 40, 120, 120, 50)
+heuristic_button = pygame.Rect(width * grid.CELL_SIZE + 40, 190, 120, 50)
+showPaths_button = pygame.Rect(width * grid.CELL_SIZE + 40, 260, 120, 50)
+restart_button = pygame.Rect(width * grid.CELL_SIZE + 40, 330, 120, 50)
 
-while running:
+font = pygame.font.Font(None, 28)
+big_font = pygame.font.Font(None, 36)
+
+while controls.running:
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
-            running = False
+            controls.running = False
 
-        # Start / Stop button
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
 
+            # Start / Stop
             if button.collidepoint(event.pos):
-                started = not started
+                controls.started = not controls.started
                 continue
 
-            # Step button
+            # Step
             if step_button.collidepoint(event.pos):
+                controls.started = True
                 pathFinding.run()
+                controls.started = False
+                controls.step += 1
                 continue
+
+            # Heuristic
+            if heuristic_button.collidepoint(event.pos):
+                heuristic = "Euclidean" if heuristic == "Manhattan" else "Manhattan"
+                pathFinding.heuristic = heuristic
+                continue
+
+            # Show all paths
+            if showPaths_button.collidepoint(event.pos):
+                controls.showAllPaths = not controls.showAllPaths
+                continue
+
+            # Restart
+            if restart_button.collidepoint(event.pos):
+                pygame.quit()
+                os.execl(sys.executable, sys.executable, *sys.argv)
 
         # Start drag
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -63,33 +95,90 @@ while running:
         if 0 <= row < len(grid.gridData) and 0 <= col < len(grid.gridData[row]):
             grid.gridData[row][col] = drag_value
 
+    # Run continuously
+    if controls.started:
+        pathFinding.run()
+        controls.step += 1
+
+    # Background
     screen.fill((30, 30, 30))
 
-    # Run continuously when started
-    if started:
-        pathFinding.run()
-
+    # Grid
     grid.draw()
 
+    # Panel
+    panel_x = width * grid.CELL_SIZE
+    pygame.draw.rect(screen, (45, 45, 45), (panel_x, 0, PANEL_WIDTH, HEIGHT))
+
+    # Title
+    title = big_font.render("Pathfinding", True, (255, 255, 255))
+    screen.blit(title, title.get_rect(center=(panel_x + PANEL_WIDTH // 2, 20)))
+
+    # Step counter
+    step_text = font.render(f"Step: {controls.step}", True, (255, 255, 255))
+    screen.blit(step_text, step_text.get_rect(center=(panel_x + 100, 440)))
+
+    # Path length
+    pathLengthText = font.render(
+        f"Path Length: {controls.pathLength}",
+        True,
+        (255, 255, 255)
+    )
+    screen.blit(
+        pathLengthText,
+        pathLengthText.get_rect(center=(panel_x + 100, 540))
+    )
+
+    # No path
+    pathNotFoundText = font.render(
+        f"No Path: {controls.pathNotFound}",
+        True,
+        (255, 255, 255)
+    )
+    screen.blit(
+        pathNotFoundText,
+        pathNotFoundText.get_rect(center=(panel_x + 100, 480))
+    )
 
     # Buttons
-    pygame.draw.rect(screen, (100, 100, 100), button)
-    pygame.draw.rect(screen, (100, 100, 100), step_button)
+    pygame.draw.rect(screen, (80, 80, 80), button, border_radius=8)
+    pygame.draw.rect(screen, (80, 80, 80), step_button, border_radius=8)
+    pygame.draw.rect(screen, (80, 80, 80), heuristic_button, border_radius=8)
+    pygame.draw.rect(screen, (80, 80, 80), showPaths_button, border_radius=8)
+    pygame.draw.rect(screen, (80, 80, 80), restart_button, border_radius=8)
 
-    font = pygame.font.Font(None, 28)
-
-    # Start / Stop text
-    text = "Stop" if started else "Start"
+    # Start / Stop
+    text = "Stop" if controls.started else "Start"
     text_surface = font.render(text, True, (255, 255, 255))
-    text_rect = text_surface.get_rect(center=button.center)
-    screen.blit(text_surface, text_rect)
+    screen.blit(text_surface, text_surface.get_rect(center=button.center))
 
-    # Step text
+    # Step
     text_surface = font.render("Step", True, (255, 255, 255))
-    text_rect = text_surface.get_rect(center=step_button.center)
-    screen.blit(text_surface, text_rect)
+    screen.blit(text_surface, text_surface.get_rect(center=step_button.center))
+
+    # Heuristic
+    text_surface = font.render(heuristic, True, (255, 255, 255))
+    screen.blit(
+        text_surface,
+        text_surface.get_rect(center=heuristic_button.center)
+    )
+
+    # Show all paths
+    text = "Paths: ON" if controls.showAllPaths else "Paths: OFF"
+    text_surface = font.render(text, True, (255, 255, 255))
+    screen.blit(
+        text_surface,
+        text_surface.get_rect(center=showPaths_button.center)
+    )
+
+    # Restart
+    text_surface = font.render("Restart", True, (255, 255, 255))
+    screen.blit(
+        text_surface,
+        text_surface.get_rect(center=restart_button.center)
+    )
 
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(400)
 
 pygame.quit()

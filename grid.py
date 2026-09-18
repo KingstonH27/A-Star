@@ -81,6 +81,9 @@ def draw():
             elif val == 2:
                 color = (255,165,0)
 
+            elif val == 3:
+                color = (200,100,0)
+
             else:
                 color = (50, 50, 50)
 

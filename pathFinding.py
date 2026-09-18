@@ -1,6 +1,6 @@
 import grid
 import math
-
+import controls
 
 
 
@@ -10,6 +10,8 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 ORANGE = (255, 165, 0)
+
+heuristic = "Manhattan"
 
 class Path:
     def __init__(self, n1, n2):
@@ -42,11 +44,10 @@ class Node:
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
 
-width = 0
-height = 0
 
-start = Node(5, 5)
-end = Node(10, 10)
+
+start = Node(0, 0)
+end = Node(controls.width-1, controls.height-1)
 
 
 
@@ -66,16 +67,24 @@ def init(w, h):
 #Algorithm
 def run():
     if len(toSearch) == 0:
+        controls.pathNotFound = True
+        controls.started = False
+        return
+
+    if controls.started == False:
         return
 
     focus = bestF(toSearch)
 
     if focus == end:
-        grid.text_tile(focus, "FI")
-        #reconstructPath(focus)
-        for n in processed:
-            reconstructPath(n)
-        return
+        controls.started = False
+        grid.text_tile(focus, "F")
+        reconstructPath(focus)
+
+        if controls.showAllPaths:
+            for n in processed:
+                reconstructPath(n)
+            return
 
     neighbors = getNeighbors(focus)
 
@@ -87,6 +96,7 @@ def run():
             n.setG(newG)
             n.setH(h(n, end))
             toSearch.append(n)
+            grid.set(n, 3)
 
 
         else:
@@ -103,11 +113,13 @@ def run():
     processed.append(focus)
 
 
+
 def reconstructPath(n):
     while n != start:
         grid.color_tile(n, GREEN)
         n2 = n
         n = n.connection
+        controls.pathLength += 1
         grid.drawPaths(Path(n,n2))
 
 
@@ -169,7 +181,7 @@ def getNeighbors(focusNode):
 
 # Heuristic - Manhattan
 def h(n1, n2):
-    return (
-            abs(n2.x - n1.x) +
-            abs(n2.y - n1.y)
-    )
+    if heuristic == "Manhattan":
+        return abs(n2.x - n1.x) + abs(n2.y - n1.y)
+
+    return math.sqrt((n2.x - n1.x)**2 + (n2.y - n1.y)**2)
